@@ -45,6 +45,7 @@ WHERE transaction_id IS NULL
    OR cogs IS NULL
    OR total_sale IS NULL;
 
+---
 
 ## Key Analysis
 **General Metrics**
