@@ -4,18 +4,19 @@ USE retail_sales_project;
 
 -- CREATE TABLE
 CREATE TABLE retail_sales (
-  transactions_id int NOT NULL PRIMARY KEY,
-  sale_date date NOT NULL,
-  sale_time varchar(8) NOT NULL,
-  customer_id int NOT NULL,
-  gender varchar(6) NOT NULL,
-  age int DEFAULT NULL,
-  category varchar(11) NOT NULL,
-  quantiy int DEFAULT NULL,
-  price_per_unit int DEFAULT NULL,
-  cogs float DEFAULT NULL,
-  total_sale float DEFAULT NULL
-  );
+  transaction_id INT NOT NULL PRIMARY KEY,
+  sale_date DATE NOT NULL,
+  sale_time TIME NOT NULL,
+  customer_id INT NOT NULL,
+  gender VARCHAR(6) NOT NULL,
+  age INT DEFAULT NULL,
+  category VARCHAR(20) NOT NULL,
+  quantity INT DEFAULT NULL,
+  price_per_unit FLOAT DEFAULT NULL,
+  cogs FLOAT DEFAULT NULL,
+  total_sale FLOAT DEFAULT NULL
+);
+
 
 -- DATA CLEANING
 SELECT *  FROM retail_sales
@@ -74,14 +75,25 @@ SELECT COUNT(*) AS total_sales FROM retail_sales;
 -- HOW MANY CUSTOMERS
 SELECT COUNT(DISTINCT CUSTOMER_ID) FROM retail_sales;
 
+-- DAILY SALES TREND
+SELECT sale_date, SUM(total_sale) AS daily_sales
+FROM retail_sales
+GROUP BY sale_date
+ORDER BY sale_date;
+
+-- REVENUE PER UNIT
+SELECT category, SUM(total_sale) / SUM(quantiy) AS revenue_per_unit
+FROM retail_sales
+GROUP BY category;
+
 -- DATA ANALYSIS
 
--- QUERY TO RETRIEVE ALL COLUMNS FOR SALE MADE ON 2022/11/05
+-- ALL COLUMNS FOR SALE MADE ON 2022/11/05
 SELECT * 
 FROM retail_sales
 WHERE SALE_DATE = '2022-11-05';
 
--- WRITE A QUERY TO RETRIEVE ALL TRANSACTION WHERE THE CATEGORY IS CLOTHING AND THE QUANTITY SOLD IS MORE THAN 3 IN THE MONTH OF NOV-2022
+-- ALL TRANSACTION WHERE THE CATEGORY IS CLOTHING AND THE QUANTITY SOLD IS MORE THAN 3 IN THE MONTH OF NOV-2022
 SELECT *
 FROM retail_sales
 WHERE category = 'Clothing'
@@ -89,28 +101,28 @@ WHERE category = 'Clothing'
   AND sale_date >= '2022-11-01'
   AND sale_date < '2022-12-01';
 
--- write query to calculate the total sales for each category
+-- Total Sales for Each Category
 SELECT category, sum(total_sale) AS sum_total_sales
 FROM retail_sales
 GROUP BY 1;
 
--- write query to show the avg age of customers who purchased from the beauty category
+-- AVG Age of Customers Who Purchased From the Beauty Category
 SELECT AVG(age) AS avg_age
 FROM retail_sales
 WHERE category = 'Beauty';
 
--- write a query to find all the transaction where the total sale is greater than 1000
+-- All the Transaction Where the Total Sale is Greater Than 1000
 SELECT *
 FROM retail_sales
 WHERE total_sale > 1000;
 
--- write a query to find the total number of transaction(transaction_id) made by each gender in each category
+-- Total Number of Transaction(transaction_id) Made by Each Gender in Each Category
 SELECT category, gender, count(transactions_id)   
 FROM retail_sales
 GROUP BY category, gender
 ORDER BY category;          
             
--- wirte query to calculate the avg sale for each month, find the best selling month in each year
+-- AVG Sale For Each Month, Find the Best Selling Month in Each Year
 SELECT 
     YEAR(sale_date) AS sale_year,
     MONTH(sale_date) AS sale_month,
@@ -131,19 +143,19 @@ FROM (
 ) ranked_sales
 WHERE sales_rank = 1;
 
--- write query to find top 5 customers based on the highest total sales
+-- Top 5 customers based on the highest total sales
 SELECT customer_id, SUM(total_sale) AS total_spent
 FROM retail_sales
 GROUP BY customer_id
 ORDER BY total_spent DESC
 LIMIT 5;
 
--- write query to find the number of unique customers who purchased item from each category
-SELECT COUNT(DISTINCT customer_id) AS num_of_cuustomers, category
+-- Number of Unique Customers Who Purchased Items From Each Category
+SELECT COUNT(DISTINCT customer_id) AS num_of_customers, category
 FROM retail_sales
 GROUP BY category;
 
- -- write query to categorize sale time into shifts and then the number of orders in each shift(example morning < 12:00, between 12:00 & 17:00, evening > 17:00)
+ -- Classify sales by time of day into shifts (Morning, Afternoon, Evening) and count the number of orders in each shift — e.g., Morning: before 12:00, Afternoon: 12:00–17:00, Evening: after 17:00.
 SELECT shift, COUNT(*) AS number_of_orders
 FROM (
   SELECT 
@@ -155,3 +167,17 @@ FROM (
   FROM retail_sales
 ) AS shift_data
 GROUP BY shift;
+
+-- Most Popular Time Slot by Category
+SELECT category, shift, COUNT(*) AS orders
+FROM (
+  SELECT category,
+         CASE 
+           WHEN sale_time < '12:00:00' THEN 'Morning'
+           WHEN sale_time >= '12:00:00' AND sale_time < '17:00:00' THEN 'Afternoon'
+           ELSE 'Evening'
+         END AS shift
+  FROM retail_sales
+) AS category_shift
+GROUP BY category, shift
+ORDER BY category, orders DESC;
