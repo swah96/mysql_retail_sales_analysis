@@ -45,43 +45,47 @@ WHERE transaction_id IS NULL
    OR cogs IS NULL
    OR total_sale IS NULL;
 
----
+```
 
-## Key Analysis
+## 🔎 Key Analysis
+
 **General Metrics**
-.Total number of transactions
 
-.Total number of unique customers
+- Total number of transactions
+- .Total number of unique customers
 
 **Customer Behavior**
-.Top 5 customers by total sales
 
-.Average age of customers in the Beauty category
+- Top 5 customers by total sales
 
-.Unique customers per product category
+- Average age of customers in the Beauty category
+
+- Unique customers per product category
 
 **Product Insights**
-.Total sales by category
+- Total sales by category
 
-.High-value transactions (sales > 1000)
+- High-value transactions (sales > 1000)
 
-.Clothing sales with quantity > 3 (Nov 2022)
+- Clothing sales with quantity > 3 (Nov 2022)
 
 **Time-Based Trends**
-.Average monthly sales per year
 
-.Best-performing month in each year
+- Average monthly sales per year
 
-.Daily sales trends
+- Best-performing month in each year
+
+- Daily sales trends
 
 **Time-of-Day Analysis**
-.Classify sales by time of day into shifts and count orders in each shift:
 
-.Morning: Before 12:00
+- Classify sales by time of day into shifts and count orders in each shift:
 
-.Afternoon: Between 12:00 and 17:00
+- Morning: Before 12:00
 
-.Evening: After 17:00 E.G
+- Afternoon: Between 12:00 and 17:00
+
+- Evening: After 17:00 E.G
 
 ```sql
 SELECT shift, COUNT(*) AS number_of_orders
@@ -95,10 +99,11 @@ FROM (
   FROM retail_sales
 ) AS shift_data
 GROUP BY shift;
-
+```
 ## Potential Enhancements
-.Add Tableau or Power BI dashboard for visual storytelling
 
-.Automate monthly reports using stored procedures
+- Add Tableau or Power BI dashboard for visual storytelling
 
-.Analyze discount/promotions impact on sales
+- Automate monthly reports using stored procedures
+
+- Analyze discount/promotions impact on sales
